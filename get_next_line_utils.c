@@ -12,6 +12,19 @@
 
 #include "get_next_line.h"
 
+size_t	ft_strlen(const char *str)
+{
+	size_t	i;
+
+	i = 0;
+	while (str)
+	{
+		++str;
+		++i;
+	}
+	return (i);
+}
+
 char	*ft_strjoin(const char *s1, const char *s2)
 {
 	char			*str;
@@ -27,15 +40,15 @@ char	*ft_strjoin(const char *s1, const char *s2)
 	while (s1[++i])
 		str[i] = s1[i];
 	j = -1;
-	while (s2[++j] && i >= 0)
-		str[i] = s2[j];
+	while (s2[++j])
+		str[++i] = s2[j];
 	str[i] = '\0';
 	return (str);
 }
 
-size_t	check_char(const char *str, const char c)
+size_t	check_char(const char *s, const char c)
 {
-	if (!str || !c)
+	if (!s || !c)
 		return (0);
 	while (*s && *s != c)
 		++s;
