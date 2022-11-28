@@ -6,18 +6,19 @@
 /*   By: noloupe <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 12:17:23 by noloupe           #+#    #+#             */
-/*   Updated: 2022/10/25 16:50:15 by noloupe          ###   ########.fr       */
+/*   Updated: 2022/11/23 11:16:45 by noloupe          ###   ########.fr       */
 /*                                                                            */
 /* ****************************************************************************/
 
 #include "get_next_line.h"
+#include <stdio.h>
 
-
-char	*clear_buffer(char *save)
+static char	*clear_buffer(char *save)
 {
 	char	*str;
 	size_t	len;
 
+	printf("\nsave: [%s]\n", save);
 	len = 0;
 	while (save[len] != '\n' && save[len] != '\0')
 		++len;
@@ -27,10 +28,11 @@ char	*clear_buffer(char *save)
 	while (*save != '\n' && *save != '\0')
 		*++str = *++save;
 	*str = '\0';
+	printf("\nSTR: [%s]\n", str);
 	return (str);
 }
 
-char	*get_buffer(int fd, char *save)
+static char	*get_buffer(int fd, char *save)
 {
 	int		read_res;
 	char	*buffer;
@@ -38,6 +40,7 @@ char	*get_buffer(int fd, char *save)
 	buffer = malloc(sizeof(char) * BUFFER_SIZE + 1);
 	if (!buffer)
 		return (NULL);
+//	printf("TEST\n");
 	read_res = 1;
 	while (!check_char(save, '\n') && read_res != 0)
 	{
@@ -47,8 +50,11 @@ char	*get_buffer(int fd, char *save)
 			free(buffer);
 			return(NULL);
 		}
+		printf("\nBUFFER: [%s]\n", buffer);
 		save = ft_strjoin(save, buffer);
+		printf("\nSAVE: [%s]\n", save);
 	}
+	free(buffer);
 	return (save);
 }
 
@@ -58,7 +64,9 @@ char	*get_next_line(int fd)
 	static char *save;
 
 	if (fd < 0 || BUFFER_SIZE < 0)
-		return NULL;
+		return (NULL);
+	save = malloc(1);
+	free(save);
 	save = get_buffer(fd, &*save);
 	if (!save)
 	{
@@ -67,11 +75,3 @@ char	*get_next_line(int fd)
 	str = clear_buffer(save);
 	return (str);
 }
-
-/*
-#include <stdio.h>
-int	main()
-{
-	printf("%s\n", get_next_line(0));
-}
-*/
