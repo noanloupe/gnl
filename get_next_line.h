@@ -6,7 +6,7 @@
 /*   By: noloupe <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 12:28:47 by noloupe           #+#    #+#             */
-/*   Updated: 2022/11/28 14:23:11 by noloupe          ###   ########.fr       */
+/*   Updated: 2022/12/07 14:34:49 by noloupe          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,10 @@
 # include <stdlib.h>
 # include <limits.h>
 
-size_t	ft_strlen(const char *str);
-char	*ft_strjoin(const char *s1, const char *s2);
-char	*ft_strdup(const char *s1);
-size_t	check_char(const char *str, const char c);
+size_t	ft_strlen(char *str);
+char	*join(char *s1, char *s2, int *size);
+void	cpy(char *dst, char *src, size_t dstsize);
+char	*save_dup(const char *s1, int *size);
 char	*get_next_line(int fd);
 
 #endif

@@ -6,74 +6,93 @@
 /*   By: noloupe <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/25 16:08:48 by noloupe           #+#    #+#             */
-/*   Updated: 2022/11/28 14:23:21 by noloupe          ###   ########.fr       */
+/*   Updated: 2022/12/07 14:34:52 by noloupe          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include <stdio.h>
 
-size_t	ft_strlen(const char *str)
+size_t	ft_strlen(char *str)
 {
 	size_t	i;
 
-	if (!str)
-		return (0);
 	i = 0;
 	while (str[i])
 		++i;
 	return (i);
 }
 
-char	*ft_strjoin(const char *s1, const char *s2)
+char	*join(char *s1, char *s2, int *size)
 {
-	char			*str;
-	size_t			i;
-	size_t			j;
+	char	*str;
+	size_t	len;
+	int		i;
+	int		j;
 
-	if (!s1 || !s2)
-		return (NULL);
-	str = malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 1));
+	len = ft_strlen(s1) + ft_strlen(s2);
+	str = malloc(sizeof(char) * len + 1);
 	if (!str)
-		return (NULL);
-	i = 0;
-	while (s1[i])
 	{
-		str[i] = s1[i];
-		++i;
+		free(s1);
+		return (NULL);
 	}
+	i = 0;
+	j = 0;
+	while (s1[j])
+		str[i++] = s1[j++];
+	free(s1);
 	j = 0;
 	while (s2[j])
 		str[i++] = s2[j++];
 	str[i] = '\0';
+	if (len > 0 && str[i - 1] == '\n')
+	{
+		*size = 0;
+	}
 	return (str);
 }
 
-char	*ft_strdup(const char *s1)
+void	cpy(char *dst, char *src, size_t dstsize)
 {
-	char			*str;
-	unsigned int	i;
+	size_t	i;
+	
+	if (!dst || !src || dstsize < 1)
+		return ;
+	i = 0;
+	while (src[i] && i < dstsize)
+		{
+			dst[i] = src[i];
+			i++;
+		}
+	dst[i] = '\0';
+}
 
-	str = malloc(sizeof(char) * (ft_strlen(s1) + 1));
+char	*save_dup(const char *s1, int	*size)
+{
+	char	*str;
+	size_t	i;
+	size_t	len;
+
+	if (!s1)
+		return (NULL);
+	len = 0;
+	while (s1[len])
+	{
+		if (s1[len] == '\n')
+		{
+			++len;
+			break;
+		}
+		++len;
+	}
+	str = malloc(sizeof(char) * len + 1);
 	if (!str)
 		return (NULL);
-	i = 0;
-	while (s1[i])
-	{
+	i = -1;
+	while (++i < len)
 		str[i] = s1[i];
-		++i;
-	}
 	str[i] = '\0';
+	if (len > 0 && str[i - 1] == '\n')
+		*size = i - 1;
 	return (str);
-}
-
-size_t	check_char(const char *s, const char c)
-{
-	if (!s || !c)
-		return (1);
-	while (*s && *s != c)
-		++s;
-	if (*s == c)
-		return (1);
-	return (0);
 }

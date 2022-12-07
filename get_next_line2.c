@@ -6,64 +6,71 @@
 /*   By: noloupe <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/23 11:19:28 by noloupe           #+#    #+#             */
-/*   Updated: 2022/11/28 14:36:06 by noloupe          ###   ########.fr       */
+/*   Updated: 2022/12/07 14:45:21 by noloupe          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
 #include "get_next_line.h"
 
-static void	get_buffer(int fd, char **line)
+static int	len_checker(char *buffer)
 {
-	char	buffer[BUFFER_SIZE + 1];
-	int		read_res;
-
-	read_res = 1;
-	while (read_res > 0 && !check_char(*line, '\n'))
+	int	len_check;
+	
+	len_check = 0;
+	while (buffer[len_check])
 	{
-		read_res = read(fd, buffer, BUFFER_SIZE);
-		buffer[read_res] = '\0';
-		*line = ft_strjoin(*line, buffer);
+		if (buffer[len_check] == '\n')
+		{
+			++len_check;
+			break;
+		}
+		++len_check;
 	}
+	return (len_check);
 }
 
-static char	*set_save(char *line, char *save)
+static char	*get_line(int fd, char *line, char *save, int *size)
 {
-	int	i;
-	int	j;
+	int		read_res;
+	int		len_check;
+	char	buffer[BUFFER_SIZE + 1];
 
-	i = 0;
-	j = 0;
-	while (line[i] != '\n' && line[i] != '\0')
+	while (*size == -1)
 	{
-		i++;
+		read_res = read(fd, buffer, BUFFER_SIZE);
+		if (read_res == -1)
+		{
+			free(line);
+			return (NULL);
+		}
+		len_check = len_checker(buffer);
+		cpy(save, &buffer[len_check], BUFFER_SIZE + 1);
+		cpy(buffer, buffer, len_check + 1);
+		line = join(line, buffer, size);
+		if (read_res == 0)
+			break;
 	}
-	if (line[i] == '\n')
-		i++;
-	while (line[i] != '\0')
-	{
-		save[j] = line[i];
-		i++;
-		j++;
-	}
-	save[j] = '\0';
-	return (save);
+	return (line);
 }
 
 char	*get_next_line(int fd)
 {
 	static char	save[BUFFER_SIZE + 1];
 	char		*line;
+	int			size;
 
 	if (fd < 0 || fd > OPEN_MAX || BUFFER_SIZE < 1)
+		return (NULL);
+	size = -1;
+	line = save_dup(save, &size);
+	if (!line)
+		return (NULL);
+	cpy(save, &save[size + 1], BUFFER_SIZE + 1);
+	line = get_line(fd, line, save, &size);
+	if (!line || line[0] == '\0')
 	{
+		free(line);
 		return (NULL);
 	}
-	if (*save)
-		line = ft_strdup(save);
-	else
-		line = "";
-	get_buffer(fd, &line);
-	save = set_save(line, save);
 	return (line);
 }
