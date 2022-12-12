@@ -5,51 +5,77 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: noloupe <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/23 11:19:28 by noloupe           #+#    #+#             */
-/*   Updated: 2022/12/07 14:45:21 by noloupe          ###   ########.fr       */
+/*   Created: 2022/12/12 14:41:16 by noloupe           #+#    #+#             */
+/*   Updated: 2022/12/12 18:03:10 by noloupe          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-static int	len_checker(char *buffer)
+int	get_extra_size(char *str)
 {
-	int	len_check;
-	
-	len_check = 0;
-	while (buffer[len_check])
-	{
-		if (buffer[len_check] == '\n')
-		{
-			++len_check;
-			break;
-		}
-		++len_check;
-	}
-	return (len_check);
+	int	i;
+
+	i = 0;
+	while (str[i] != '\n')
+		i++;
+	return (i);
 }
 
-static char	*get_line(int fd, char *line, char *save, int *size)
+char	*get_line(char *save, char *line, int *check, int fd)
 {
-	int		read_res;
-	int		len_check;
 	char	buffer[BUFFER_SIZE + 1];
+	int		read_res;
+	int		extra_size;
 
-	while (*size == -1)
+	read_res = 1;
+	extra_size = BUFFER_SIZE;
+	while (*check == 0 && read_res > 0)
 	{
 		read_res = read(fd, buffer, BUFFER_SIZE);
-		if (read_res == -1)
+		buffer[BUFFER_SIZE] = '\0';
+		if (read_res < 1)
 		{
 			free(line);
+			ft_bzero(save, BUFFER_SIZE + 1);
 			return (NULL);
 		}
-		len_check = len_checker(buffer);
-		cpy(save, &buffer[len_check], BUFFER_SIZE + 1);
-		cpy(buffer, buffer, len_check + 1);
-		line = join(line, buffer, size);
-		if (read_res == 0)
-			break;
+		if (check_char(buffer, '\n'))
+		{
+			extra_size = get_extra_size(buffer) + 1;
+			*check = 1;
+		}
+		copy(save, &buffer[extra_size], BUFFER_SIZE + 1);
+		line = join(line, buffer, extra_size);
 	}
+	return (line);
+}
+
+char	*save_dup(char *save, int *len, int *check)
+{
+	char	*line;
+	int		i;
+	int		count;
+
+	if (!save)
+		return (NULL);
+	count = 0;
+	i = 0;
+	while (save[i] && save[count] != '\n')
+	{
+		i++;
+		count++;
+	}
+	if (save[count] == '\n')
+		*check = 1;
+	line = malloc(sizeof(char) * count + 1);
+	if (!line)
+		return (NULL);
+	i = -1;
+	while (++i < count)
+		line[i] = save[i];
+	line[i] = '\0';
+	*len = count;
 	return (line);
 }
 
@@ -57,20 +83,15 @@ char	*get_next_line(int fd)
 {
 	static char	save[BUFFER_SIZE + 1];
 	char		*line;
-	int			size;
+	int			check;
+	int			len;
 
 	if (fd < 0 || fd > OPEN_MAX || BUFFER_SIZE < 1)
 		return (NULL);
-	size = -1;
-	line = save_dup(save, &size);
-	if (!line)
-		return (NULL);
-	cpy(save, &save[size + 1], BUFFER_SIZE + 1);
-	line = get_line(fd, line, save, &size);
-	if (!line || line[0] == '\0')
-	{
-		free(line);
-		return (NULL);
-	}
+	len = 0;
+	check = 0;
+	line = save_dup(save, &len, &check);
+	copy(save, &save[len + 1], BUFFER_SIZE + 1);
+	line = get_line(save, line, &check, fd);
 	return (line);
 }
