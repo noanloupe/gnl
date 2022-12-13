@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: noloupe <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/10/25 12:28:47 by noloupe           #+#    #+#             */
-/*   Updated: 2022/12/12 18:02:25 by noloupe          ###   ########.fr       */
+/*   Created: 2022/12/13 14:26:48 by noloupe           #+#    #+#             */
+/*   Updated: 2022/12/13 15:28:54 by noloupe          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,9 @@
 # include <stdio.h>
 
 char	*get_next_line(int fd);
+void	copy(char *dst, char *src, int size);
+void	ft_bzero(char *str, int size);
+char	*join(char *line, char *buffer, int size);
 int		ft_strlen(char *str);
-int		check_char(char *str, char c);
-void	ft_bzero(char *s, int n);
-void	copy(char *dst, char *src, int dstsize);
-char	*join(char *s1, char *s2, int size);
 
 #endif

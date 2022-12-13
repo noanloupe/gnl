@@ -1,25 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line_utils2.c                             :+:      :+:    :+:   */
+/*   get_next_line_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: noloupe <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/12/12 14:41:48 by noloupe           #+#    #+#             */
-/*   Updated: 2022/12/12 18:03:52 by noloupe          ###   ########.fr       */
+/*   Created: 2022/12/13 14:26:21 by noloupe           #+#    #+#             */
+/*   Updated: 2022/12/13 16:53:53 by noloupe          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-int	ft_strlen(char *str)
+void	copy(char *dst, char *src, int size)
 {
 	int	i;
 
+	if (size < 1)
+		return ;
 	i = 0;
-	while (str[i])
+	while (src[i])
+	{
+		dst[i] = src[i];
 		i++;
-	return (i);
+	}
+	while (i < size)
+	{
+		dst[i] = '\0';
+		i++;
+	}
 }
 
 int	check_char(char *str, char c)
@@ -31,61 +40,57 @@ int	check_char(char *str, char c)
 	{
 		if (str[i] == c)
 			return (1);
-		i++;
 	}
 	return (0);
 }
 
-void	ft_bzero(char *s, int n)
+void	ft_bzero(char *str, int size)
 {
 	int	i;
 
 	i = 0;
-	while (i < n)
+	while (i < size)
 	{
-		s[i] = '\0';
+		str[i] = '\0';
 		i++;
 	}
 }
 
-void	copy(char *dst, char *src, int dstsize)
-{
-	int	i;
-
-	if (dstsize < 1)
-		return ;
-	i = 0;
-	while (src[i] && i < dstsize)
-	{
-		dst[i] = src[i];
-		i++;
-	}
-	dst[i] = '\0';
-}
-
-char	*join(char *s1, char *s2, int size)
+char	*join(char *line, char *buffer, int size)
 {
 	char	*str;
 	int		i;
 	int		j;
+	int		len;
 
-	str = malloc(sizeof(char) * ft_strlen(s1) + size + 1);
+	len = ft_strlen(line) + size;
+	str = malloc(sizeof(char) * len + 1);
+	if (!str)
+		return (NULL);
 	i = 0;
-	while (s1[i])
+	while (line[i])
 	{
-		str[i] = s1[i];
+		str[i] = line[i];
 		i++;
 	}
-	free(s1);
+	free(line);
 	j = 0;
-	while (j < size)
+	while (i < len)
 	{
-		str[i] = s2[j];
+		str[i] = buffer[j];
 		i++;
 		j++;
 	}
 	str[i] = '\0';
-	if (str[i - 1] == '\n')
-		str[i - 1] = '\0';
 	return (str);
+}
+
+int	ft_strlen(char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+		i++;
+	return (i);
 }
