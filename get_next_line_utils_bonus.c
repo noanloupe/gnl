@@ -6,7 +6,7 @@
 /*   By: noloupe <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/15 11:56:44 by noloupe           #+#    #+#             */
-/*   Updated: 2022/12/15 11:58:54 by noloupe          ###   ########.fr       */
+/*   Updated: 2022/12/15 12:21:57 by noloupe          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,13 +66,13 @@ char	*join(char *line, char *buffer, int size)
 	len = ft_strlen(line) + size;
 	str = malloc(sizeof(char) * len + 1);
 	if (!str)
-		return (NULL);
-	i = 0;
-	while (line[i])
 	{
-		str[i] = line[i];
-		i++;
+		free(line);
+		return (NULL);
 	}
+	i = -1;
+	while (line[++i])
+		str[i] = line[i];
 	free(line);
 	j = 0;
 	while (i < len)
